@@ -10,7 +10,8 @@
 #
 
 EXIT_CODE=0
-for FILE in `ls *.gz *.dmg *.zip` ; do
+FILES="ls *.gz *.dmg *.zip"
+for FILE in `$FILES` ; do
 
 	echo ""
 	echo "$FILE: verifying checksums and signatures..."
@@ -49,10 +50,12 @@ for FILE in `ls *.gz *.dmg *.zip` ; do
 	fi
 done
 
+echo ""
 if [ "$EXIT_CODE" == "0" ] ; then 
-	echo "All checks have passed"
+	echo "All checks have passed successfully."
+	echo "Files verified: `$FILES |tr '\n' ' '`"
 else 
-	echo "*** Some checks have failed"
+	echo "*** Some checks have failed. Read the output of this command above for details."
 	EXIT_CODE=1
 fi
 
