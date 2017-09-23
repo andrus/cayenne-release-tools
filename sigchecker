@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#
+# Compares Apache Cayenne release checksums and signature using OSX tools
+# 
+# Checksum file format is expected to be the one prodiced by "gpg":
+#
+#   gpg --print-md MD5 file
+#   gpg --print-md SHA512 file
+#
+
+
+for FILE in `ls *.gz *.dmg *.zip` ; do
+
+	echo ""
+	echo "$FILE: verifying checksums and signatures..."
+	
+	MD5_ACTUAL=`md5 $FILE |perl -n -e 's/^.+=\s([[:xdigit:]]+)$/\1/; print "$_\n"' | tr [a-z] [A-Z]`
+	MD5_EXPECTED=`cat $FILE.md5 |perl -n -e 's/\s//g; s/^.+:([[:xdigit:]]+)$/\1/; print "$_\n"'`
+
+	echo "MD5 Actual  : $MD5_ACTUAL"
+	echo -n "MD5 Expected: $MD5_EXPECTED"
+	if [ "$MD5_ACTUAL" == "$MD5_EXPECTED" ]; then
+		echo "... matches"
+	else 
+		echo "   *** does not match"
+	fi
+
+	SHA512_ACTUAL=`shasum -a 512 $FILE |perl -n -e 's/^([[:xdigit:]]+)\s.+$/\1/; print "$_\n"' | tr [a-z] [A-Z]`
+	SHA512_EXPECTED=`cat $FILE.sha512 |tr '\n' ' '|perl -n -e 's/\s//g; s/^.+:([[:xdigit:]]+)$/\1/; print "$_\n"'`
+
+	echo "SHA512 Actual  : $SHA512_ACTUAL"
+	echo -n "SHA512 Expected: $SHA512_EXPECTED"
+	if [ "$SHA512_ACTUAL" == "$SHA512_EXPECTED" ]; then
+		echo "... matches"
+	else 
+		echo "   *** does not match"
+	fi
+
+	echo "Checking signature...."
+	gpg -q --verify "$FILE.asc" "$FILE"
+	if [ "$?" == "0" ] ; then 
+		echo "... valid"
+	else 
+		echo "*** INVALID"
+	fi
+
+done
