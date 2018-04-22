@@ -1,5 +1,7 @@
 # cayenne-release-tools
 
+`sigchecker` verifies release artifact checksums and signatures.
+
 ```
 export RELEASE_DIR=X.XX
 mkdir $RELEASE_DIR ; cd $RELEASE_DIR
