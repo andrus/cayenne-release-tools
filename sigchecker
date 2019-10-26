@@ -15,18 +15,6 @@ for FILE in `$FILES` ; do
 
 	echo ""
 	echo "$FILE: verifying checksums and signatures..."
-	
-	MD5_ACTUAL=`md5 $FILE |perl -n -e 's/^.+=\s([[:xdigit:]]+)$/\1/; print "$_\n"' | tr [a-z] [A-Z]`
-	MD5_EXPECTED=`cat $FILE.md5 |perl -n -e 's/\s//g; s/^.+:([[:xdigit:]]+)$/\1/; print "$_\n"'`
-
-	echo "MD5 Actual  : $MD5_ACTUAL"
-	echo -n "MD5 Expected: $MD5_EXPECTED"
-	if [ "$MD5_ACTUAL" == "$MD5_EXPECTED" ]; then
-		echo "... matches"
-	else 
-		echo "   *** does not match"
-		EXIT_CODE=1
-	fi
 
 	SHA512_ACTUAL=`shasum -a 512 $FILE |perl -n -e 's/^([[:xdigit:]]+)\s.+$/\1/; print "$_\n"' | tr [a-z] [A-Z]`
 	SHA512_EXPECTED=`cat $FILE.sha512 |tr '\n' ' '|perl -n -e 's/\s//g; s/^.+:([[:xdigit:]]+)$/\1/; print "$_\n"'`
